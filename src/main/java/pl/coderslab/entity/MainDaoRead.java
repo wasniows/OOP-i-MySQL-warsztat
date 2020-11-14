@@ -10,9 +10,6 @@ public class MainDaoRead {
 
         System.out.println(user);
 
-        User userNull = userDao.read(1);
-        System.out.println(userNull);
-
     }
 
 }

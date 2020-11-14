@@ -6,10 +6,7 @@ public class MainDao {
 
         //Test zapisu nowego usera do bazy
         UserDao userDao = new UserDao();
-        User user = new User();
-        user.setUserName("Marek");
-        user.setEmail("marek@onet.pl");
-        user.setPassword("asjdfasdff;alAAkfj");
+        User user = new User("Kamil", "kamil@wp.pl", "erggnurenguerg");
         userDao.create(user);
 
     }

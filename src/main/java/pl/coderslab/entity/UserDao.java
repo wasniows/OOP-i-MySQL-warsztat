@@ -4,6 +4,7 @@ package pl.coderslab.entity;
 import org.mindrot.jbcrypt.BCrypt;
 import pl.coderslab.DbUtil;
 
+import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.sql.*;
 import java.util.Arrays;
 
@@ -35,6 +36,7 @@ public class UserDao {
             if (rs.next()) {
                 user.setId(rs.getInt(1));
             }
+            System.out.println("Zapisano");
             return user;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -44,21 +46,18 @@ public class UserDao {
     }
 
     //Odczytywanie usera z bazy workshop2
-    public User read(int userId){
+    public User read(int userId) {
         try (Connection connection = DbUtil.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(READ_USER_QUERY);
             statement.setInt(1, userId);
             ResultSet rs = statement.executeQuery();
-            if (rs.next()){
-                User user = new User();
+            if (rs.next()) {
+                User user = new User(rs.getString("username"), rs.getString("email"), rs.getString("password"));
                 user.setId(rs.getInt("id"));
-                user.setUserName(rs.getString("username"));
-                user.setEmail(rs.getString("email"));
-                user.setPassword(rs.getString("password"));
                 return user;
             }
 
-        }catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
@@ -73,18 +72,26 @@ public class UserDao {
             statement.setString(3, this.hashPassword(user.getPassword()));
             statement.setInt(4, user.getId());
             statement.executeUpdate();
-        }catch (SQLException e){
+            System.out.println("Dane zostały zmienione");
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     //Usuwanie usera z bazy workshop2
-    public void delete(int usersId){
+    public void delete(int usersId) {
         try (Connection connection = DbUtil.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(DELETE_USER_QUERY);
-            statement.setInt(1,usersId);
-            statement.executeUpdate();
-        }catch (SQLException e) {
+            UserDao userDao = new UserDao();
+            if(userDao.read(usersId) != null){
+                PreparedStatement statement = connection.prepareStatement(DELETE_USER_QUERY);
+                statement.setInt(1, usersId);
+                statement.executeUpdate();
+                System.out.println("Usuer " + " o ID " + usersId + " został usunięty");
+            } else {
+                System.out.println("nie ma w bazie usera o ID "+usersId);
+            }
+
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
@@ -96,7 +103,7 @@ public class UserDao {
             User[] users = new User[0];
             PreparedStatement statement = connection.prepareStatement(FIND_ALL_USERS_QUERY);
             ResultSet rs = statement.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 User user = new User();
                 user.setId((rs.getInt("id")));
                 user.setUserName(rs.getString("username"));
@@ -106,7 +113,7 @@ public class UserDao {
             }
             return users;
 
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return null;
         }
