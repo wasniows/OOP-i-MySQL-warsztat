@@ -82,13 +82,13 @@ public class UserDao {
     public void delete(int usersId) {
         try (Connection connection = DbUtil.getConnection()) {
             UserDao userDao = new UserDao();
-            if(userDao.read(usersId) != null){
+            if (userDao.read(usersId) != null) {
                 PreparedStatement statement = connection.prepareStatement(DELETE_USER_QUERY);
                 statement.setInt(1, usersId);
                 statement.executeUpdate();
                 System.out.println("Usuer " + " o ID " + usersId + " został usunięty");
             } else {
-                System.out.println("nie ma w bazie usera o ID "+usersId);
+                System.out.println("nie ma w bazie usera o ID " + usersId);
             }
 
         } catch (SQLException e) {
@@ -119,7 +119,7 @@ public class UserDao {
         }
     }
 
-
+    //Dodawanie nowego usera do tabeli users
     private User[] addToArray(User u, User[] users) {
         User[] tmpUsers = Arrays.copyOf(users, users.length + 1);
         tmpUsers[users.length] = u;
